@@ -7,12 +7,6 @@ class Gcc < Formula
   license "GPL-3.0"
   head "https://gcc.gnu.org/git/gcc.git"
 
-  bottle do
-    sha256 "8dbccea194c20b1037b7e8180986e98a8ee3e37eaac12c7d223c89be3deaac6a" => :catalina
-    sha256 "79d2293ce912dc46af961f30927b31eb06844292927be497015496f79ac41557" => :mojave
-    sha256 "5ed870a39571614dc5d83be26d73a4164911f4356b80d9345258a4c1dc3f1b70" => :high_sierra
-  end
-
   # The bottles are built on systems with the CLT installed, and do not work
   # out of the box on Xcode-only systems due to an incorrect sysroot.
   pour_bottle? do
@@ -49,7 +43,7 @@ class Gcc < Formula
     languages = %w[c c++ objc obj-c++ fortran jit]
 
     osmajor = `uname -r`.split(".").first
-    pkgversion = "Homebrew GCC #{pkg_version} #{build.used_options*" "}".strip
+    pkgversion = "Homebrew GCC #{pkg_version} #{build.used_options * " "}".strip
 
     args = %W[
       --build=x86_64-apple-darwin#{osmajor}
@@ -95,13 +89,13 @@ class Gcc < Formula
       system "make", "BOOT_LDFLAGS=-Wl,-headerpad_max_install_names"
       system "make", "install"
 
-      bin.install_symlink bin/"gfortran-#{version_suffix}" => "gfortran"
+      bin.install_symlink bin / "gfortran-#{version_suffix}" => "gfortran"
     end
 
     # Handle conflicts between GCC formulae and avoid interfering
     # with system compilers.
     # Rename man7.
-    Dir.glob(man7/"*.7") { |file| add_suffix file, version_suffix }
+    Dir.glob(man7 / "*.7") { |file| add_suffix file, version_suffix }
     # Even when we disable building info pages some are still installed.
     info.rmtree
   end
@@ -114,39 +108,39 @@ class Gcc < Formula
   end
 
   test do
-    (testpath/"hello-c.c").write <<~EOS
-      #include <stdio.h>
-      int main()
-      {
-        puts("Hello, world!");
-        return 0;
-      }
-    EOS
+    (testpath / "hello-c.c").write <<~EOS
+                                     #include <stdio.h>
+                                     int main()
+                                     {
+                                       puts("Hello, world!");
+                                       return 0;
+                                     }
+                                   EOS
     system "#{bin}/gcc-#{version_suffix}", "-o", "hello-c", "hello-c.c"
     assert_equal "Hello, world!\n", `./hello-c`
 
-    (testpath/"hello-cc.cc").write <<~EOS
-      #include <iostream>
-      int main()
-      {
-        std::cout << "Hello, world!" << std::endl;
-        return 0;
-      }
-    EOS
+    (testpath / "hello-cc.cc").write <<~EOS
+                                       #include <iostream>
+                                       int main()
+                                       {
+                                         std::cout << "Hello, world!" << std::endl;
+                                         return 0;
+                                       }
+                                     EOS
     system "#{bin}/g++-#{version_suffix}", "-o", "hello-cc", "hello-cc.cc"
     assert_equal "Hello, world!\n", `./hello-cc`
 
-    (testpath/"test.f90").write <<~EOS
-      integer,parameter::m=10000
-      real::a(m), b(m)
-      real::fact=0.5
+    (testpath / "test.f90").write <<~EOS
+                                    integer,parameter::m=10000
+                                    real::a(m), b(m)
+                                    real::fact=0.5
 
-      do concurrent (i=1:m)
-        a(i) = a(i) + fact*b(i)
-      end do
-      write(*,"(A)") "Done"
-      end
-    EOS
+                                    do concurrent (i=1:m)
+                                      a(i) = a(i) + fact*b(i)
+                                    end do
+                                    write(*,"(A)") "Done"
+                                    end
+                                  EOS
     system "#{bin}/gfortran", "-o", "test", "test.f90"
     assert_equal "Done\n", `./test`
   end
