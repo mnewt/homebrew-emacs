@@ -1,0 +1,13 @@
+#+TITLE: Emacs Homebrew Scripts
+
+* About
+
+This is a collection of [[https://brew.sh/][Homebrew]] scripts used to build Emacs, related tools, and dependencies.
+
+* Install
+
+Install =gcc= with =libgccjit= like this:
+
+#+begin_src sh
+brew install Formula/gcc.rb --build-from-source --force
+#+end_src
