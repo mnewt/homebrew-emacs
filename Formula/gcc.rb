@@ -7,6 +7,12 @@ class Gcc < Formula
   license "GPL-3.0"
   head "https://gcc.gnu.org/git/gcc.git"
 
+  bottle do
+    root_url "https://homebrew.bintray.com/bottles-emacs"
+    rebuild 1
+    sha256 "c5d5d3943f6eeb79876f61869cd721f6af4ae0a0f90e5d91793b39f4b9236f5b" => :catalina
+  end
+
   # The bottles are built on systems with the CLT installed, and do not work
   # out of the box on Xcode-only systems due to an incorrect sysroot.
   pour_bottle? do
